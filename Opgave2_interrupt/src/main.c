@@ -92,4 +92,3 @@ void on_btn_push() {
 	print_dip_pos(PINK);
 }
 
-
