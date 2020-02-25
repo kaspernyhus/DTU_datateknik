@@ -29,9 +29,7 @@ void setPinMode(char Reg, int Pin, char Mode) {
             break;
         
         default:
-            DDR_reg = 0;
-            PORT_reg = 0;
-            break;
+            return;
     }   
     
     switch (Mode) {
