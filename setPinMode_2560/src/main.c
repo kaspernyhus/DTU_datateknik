@@ -5,11 +5,18 @@
  */ 
 
 #include <avr/io.h>
+#include "setPinMode.h"
 
-void setPinMode(int pin, char mode);
+
+void blink_on_push() {
+    
+}
+
+
 
 int main(void)
 {
+    setPinMode('E', 4, OUTPUT);
 
 	while (1)
     {
@@ -17,8 +24,3 @@ int main(void)
     }
 }
 
-
-void setPinMode(int pin, char mode) {
-    
-
-}
