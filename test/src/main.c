@@ -6,13 +6,15 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-
+#include "setPinMode.h"
 
 
 
 
 int main(void) {
     
+  //DDRB |= (1<<7);
+  setPinMode('B', 7, OUTPUT);
 
 	while (1)
     {
@@ -21,8 +23,7 @@ int main(void) {
             _delay_ms(100);
             PORTB &=~ (1<<7);
             _delay_ms(100);
-        
-        _delay_ms(1000);
         }
+      _delay_ms(1000);
     }
 }

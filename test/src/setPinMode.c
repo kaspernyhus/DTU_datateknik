@@ -35,6 +35,7 @@ void setPinMode(char Reg, int Pin, char Mode) {
     switch (Mode) {
         case OUTPUT:
             DDR_reg |= (1<<Pin); //1
+            PORT_reg &=~ (1<<Pin); //0
             break;
         
         case 'I': // INPUT

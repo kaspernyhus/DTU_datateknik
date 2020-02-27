@@ -10,7 +10,7 @@
 #include "ssd1306.h"
 
 
-void init() {
+void init_OLED() {
 	I2C_Init();
 	InitializeDisplay();
 	clear_display();
@@ -18,7 +18,7 @@ void init() {
 
 
 int main(void) {
-  init();
+  init_OLED();
   
   while (1) {
 
