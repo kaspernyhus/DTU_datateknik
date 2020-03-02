@@ -39,13 +39,13 @@ void SPI_init_slave() {
 
 
 void SPI_MasterTransmit(char cData) {
-  PORTB &=~ (1<<0); // set SS LOW
+  //PORTB &=~ (1<<0); // set SS LOW
 
   SPDR = cData; // save to Data Register
 
   while(!(SPSR & (1<<SPIF))); // Wait for transmission complete
 
-  PORTB |= (1<<0); // set SS HIGH
+  //PORTB |= (1<<0); // set SS HIGH
 }
 
 char SPI_SlaveReceive(void) {
