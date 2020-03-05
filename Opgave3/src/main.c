@@ -71,6 +71,7 @@ void show_temp(int data) {
   
   data = data * 0.25;
   print_dec(data, 5,7);
+  sendStrXY("C",5,9);
 }
 
 
@@ -83,7 +84,7 @@ int main(void) {
   int i;
   
   while (1) {
-    sendCharXY('0'+ i, 1,1);
+    print_dec(i, 1, 0);
     i++;
     
     temp = getRawData();
