@@ -24,71 +24,42 @@ void init() {
 
 int getRawData() {
   PORTB &=~ (1<<0); // set SS LOW
+  
   char MSB;
   char LSB;
-  int all_data;
   int temp_data;
 
   SPI_MasterTransmit(0x00);
-
   MSB = SPDR;
   
   SPI_MasterTransmit(0x00);
-
   LSB = SPDR;
 
   PORTB |= (1<<0); // set SS HIGH
 
-  all_data = (MSB << 8) | LSB ; // combine the two bytes in to one variable
-
-  /* Extraxt the 12bits of temperature information */
-  temp_data = 0b111111111111 & (all_data >> 3); // 111111111111 & all_data (MINUS de tre første bits)
-
+  temp_data = (MSB << 8 | LSB)>>3 ; // combine the two bytes in to one variable and cut first 3 bits
   return temp_data;
-}
-
-
-void print_bin(int c, int bits, int row) {
-  char c_buffer;
-  int XY = 15 - ((16 - bits) / 2); // prints in the center of the screen
-
-  for (int i=0; i<bits; i++) {
-    c_buffer = '0' + !!(c & (1 << i));
-    sendCharXY(c_buffer, row, XY-i);
-  }
-}
-
-
-void print_dec(int dec, int x, int y) {
-  char str[20];
-  sprintf(str, "%d", dec);
-  sendStrXY(str, x, y);
-}
-
-
-void show_temp(int data) {
-  print_bin(data, 12, 4);
-  
-  data = data * 0.25;
-  print_dec(data, 5,7);
-  sendStrXY("C",5,9);
 }
 
 
 int main(void) {
   init();
-  sendStrXY("MAX6675 test",0,2);
-  sendStrXY("Temperatur:",2,2);
-  
-  int temp;
-  int i;
-  
-  while (1) {
-    print_dec(i, 1, 0);
-    i++;
-    
-    temp = getRawData();
-    show_temp(temp);
-    _delay_ms(1000);
+	sendStrXY("MAX6675 test",0,2);
+	sendStrXY("Temperatur:",2,2);
+	
+	int temp;
+	int reel_temp = 0;
+	int deci = 0;
+	char str[20];
+	
+	while (1) {
+		temp = getRawData();
+		reel_temp = trunc(temp*0.25);
+		deci = (temp*0.25 - reel_temp) * 100;
+		
+		sprintf(str, "%d.%0.2d C", reel_temp, deci);
+		sendStrXY(str, 3,5);
+		
+		_delay_ms(1000);
   }
 }
