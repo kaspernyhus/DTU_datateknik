@@ -80,8 +80,12 @@ int main(void) {
   sendStrXY("Temperatur:",2,2);
   
   int temp;
+  int i;
   
   while (1) {
+    sendCharXY('0'+ i, 1,1);
+    i++;
+    
     temp = getRawData();
     show_temp(temp);
     _delay_ms(1000);
