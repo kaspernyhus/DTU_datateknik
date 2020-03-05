@@ -24,6 +24,7 @@ void SPI_init_master() {
 
   SPCR |= (1<<SPE) | (1<<MSTR) | (1<<CPOL); // SPI setup - enable / set as MASTER / Clk polarity - "clock starts HIGH" note: CPHA sets Clk phase
   SPCR |= (1<<SPR1); // SPI Clock Rate Select. (SPR0 = 0, SPR1 = 1 => f_osc / 64) => 16MHz/64 = 250kHz
+  SPCR &=~ (1<<SPR0);
 }
 
 
