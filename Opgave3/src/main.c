@@ -7,7 +7,10 @@
  * 
  */ 
 
+#define F_CPU 16000000UL
+
 #include <avr/io.h>
+#include <stdio.h>
 #include <util/delay.h>
 #include "I2C.h"
 #include "ssd1306.h"
@@ -19,7 +22,7 @@ void init() {
 	InitializeDisplay();
 	clear_display();
 
-  SPI_init_master();
+	SPI_init_master();
 }
 
 int getRawData() {
