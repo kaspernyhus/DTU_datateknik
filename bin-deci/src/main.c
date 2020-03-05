@@ -42,7 +42,7 @@ int main(void) {
   int bin = 0b011000101101;
 
   print_bin(bin, 12, 3);
-  print_dec(bin, 3, 5);
+  print_dec(bin, 4, 5);
 
   while (1) {
 
