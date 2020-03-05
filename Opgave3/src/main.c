@@ -67,13 +67,17 @@ void print_dec(int dec, int x, int y) {
 
 void show_temp(int data) {
   data = data * 0.25;
-  print_dec(data, 4,5);
+  print_dec(data, 5,7);
 }
 
 
 int main(void) {
   init();
+  sendStrXY("MAX6675 test", 0, 2);
+  sendStrXY("Temperatur:", 3,2);
+  
   int temp;
+  
   while (1) {
     temp = getRawData();
     show_temp(temp);
