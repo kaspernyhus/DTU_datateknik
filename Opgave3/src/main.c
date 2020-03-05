@@ -39,8 +39,9 @@ int getRawData() {
 
   PORTB |= (1<<0); // set SS HIGH
 
-  all_data = (MSB << 8) | LSB ;
+  all_data = (MSB << 8) | LSB ; // combine the two bytes in to one variable
 
+  /* Extraxt the 12bits of temperature information */
   temp_data = 0b111111111111 & (all_data >> 3); // 111111111111 & all_data (MINUS de tre første bits)
 
   return temp_data;
@@ -66,6 +67,8 @@ void print_dec(int dec, int x, int y) {
 
 
 void show_temp(int data) {
+  print_bin(data, 12, 4);
+  
   data = data * 0.25;
   print_dec(data, 5,7);
 }
@@ -73,8 +76,8 @@ void show_temp(int data) {
 
 int main(void) {
   init();
-  sendStrXY("MAX6675 test", 0, 2);
-  sendStrXY("Temperatur:", 3,2);
+  sendStrXY("MAX6675 test",0,2);
+  sendStrXY("Temperatur:",2,2);
   
   int temp;
   
