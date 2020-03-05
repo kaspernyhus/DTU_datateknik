@@ -26,12 +26,12 @@ void init() {
 }
 
 int getRawData() {
-  PORTB &=~ (1<<0); // set SS LOW
-  
   char MSB;
   char LSB;
   int temp_data;
 
+  PORTB &=~ (1<<0); // set SS LOW
+  
   SPI_MasterTransmit(0x00);
   MSB = SPDR;
   
