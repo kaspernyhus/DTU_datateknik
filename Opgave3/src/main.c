@@ -59,8 +59,8 @@ int main(void) {
 		temp = getRawData();
 		reel_temp = trunc(temp*0.25);
 		deci = (temp*0.25 - reel_temp) * 100;
-		
-		sprintf(str, "%d.%0.2d C", reel_temp, deci);
+
+		sprintf(str, "%d.%0.2d", reel_temp, deci);
 		sendStrXY(str, 3,5);
 		
 		_delay_ms(1000);
