@@ -1,11 +1,14 @@
 /*
- *
- * Kasper Nyhus Kaae
- * s195087
- * 
- * Opgave 3
- * 
- */ 
+----------------------------
+ Datateknik & programmering 
+// 		Opgave 3
+----------------------------
+
+Oscar Emil Vinholt s182500
+Mehrdad Dadkhah s195077
+Kasper Nyhus Kaae s195087
+
+*/ 
 
 #define F_CPU 16000000UL
 
