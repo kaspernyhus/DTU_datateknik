@@ -14,6 +14,8 @@ SCK   =>  pin 52 (PB1)
 SS    =>  pin 53 (PB0)
 
 */
+
+#include "SPI.h"
 #include <avr/io.h>
 
 
