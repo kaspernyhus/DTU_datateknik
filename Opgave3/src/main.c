@@ -23,7 +23,7 @@ Kasper Nyhus Kaae s195087
 void init() {
 	I2C_Init();
 	InitializeDisplay();
-	clear_display();
+	clear_display();                                                                                                                    
 
 	SPI_init_master();
 }
