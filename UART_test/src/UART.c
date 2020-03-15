@@ -4,14 +4,9 @@
         s195087
 
 ---------------------------------
-SPI module for
+UART module for
 ARDUINO MEGA2560
 ---------------------------------
-
-MISO  =>  pin 50 (PB3)
-MOSI  =>  pin 51 (PB2)
-SCK   =>  pin 52 (PB1)
-SS    =>  pin 53 (PB0)
 
 */
 
