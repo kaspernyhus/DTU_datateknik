@@ -12,16 +12,28 @@
 #include "I2C.h"
 #include "ssd1306.h"
 #include "UART.h"
+#include "interrupt.h"
+#include <avr/interrupt.h>
 
 
 volatile char c;
+volatile char Reset_flag = 0; // interrupt reset button
 volatile char RX_flag = 0;
+
 
 
 void OLED_Init() {
 	I2C_Init();
 	InitializeDisplay();
 	clear_display();
+}
+
+
+void itr_button_Init() {
+  itr4_Init();
+
+	DDRE &=~ (1<<4); // set PE4 as INPUT PULLUP
+	PORTE |= (1<<4); 
 }
 
 
@@ -46,8 +58,12 @@ void update_time(int *hh , int *mm , int *ss) {
 
 
 int main(void) {
-  OLED_Init();
   UART0_Init(MYUBRR);
+  UART0_enableReceive_Itr;
+  OLED_Init();
+  itr_button_Init();
+  sei(); // global interrupt enable
+  
   
   UART0_puts("Indtast den aktuelle tid (hh:mm:ss): \r");
   
@@ -64,10 +80,16 @@ int main(void) {
   sprintf(time, "\nInit time: %02i:%02i:%02i\r", hours, minutes, seconds);
   UART0_puts(time);
 
-  
-  //sei(); Global Interrupt Enable
 
   while (1) {
+    if (Reset_flag == 1) {
+      Reset_flag = 0;
+      sscanf(init_time, "%d:%d:%d" , &hours, &minutes, &seconds);
+      UART0_puts("\nUr resat til: \r");
+      sprintf(time, "%02i:%02i:%02i\r", hours, minutes, seconds);
+      UART0_puts(time);
+    }
+    
     update_time(&hours, &minutes, &seconds);
     sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
     UART0_puts(time);
@@ -76,7 +98,11 @@ int main(void) {
 }
 
 
-ISR(USART0_RX_vect) {
+ISR(INT4_vect) { // Reset button ISR
+  Reset_flag = 1;
+}
+
+ISR(USART0_RX_vect) { // RX complete ISR
   RX_flag = 1;
   c=UDR0;
 }

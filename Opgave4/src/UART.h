@@ -15,3 +15,5 @@ void UART0_sendChar(char data);
 char UART0_receiveChar();
 void UART0_puts(char *string);
 void UART0_gets(char *cPtr);
+void UART0_enableReceive_Itr();
+void UART0_disableReceive_Itr();
