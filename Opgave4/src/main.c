@@ -8,18 +8,18 @@
 #define MYUBRR F_CPU/8/BAUD-1 //full dublex
 
 #include <avr/io.h>
-#include <util/delay.h>
-#include "I2C.h"
-#include "ssd1306.h"
 #include "UART.h"
 #include "interrupt.h"
 #include <avr/interrupt.h>
+#include "timer.h"
 
 
 volatile char data;
 volatile char Reset_flag = 0; // interrupt reset button
 volatile char RX_flag = 0;
 volatile char RX_recieved = 0;
+volatile char timer_flag = 0;
+volatile int counter = 0;
 char init_time[50] = {0}; //initialize the buffer!
 char time[50];
 volatile char start_time = 0;
@@ -65,6 +65,7 @@ int main(void) {
   UART0_enableReceive_Itr();
   OLED_Init();
   itr_button_Init();
+  timer3_Init(249); // = 1ms, prescaling = 64
   sei(); // global interrupt enable
   
   UART0_puts("Indtast den aktuelle tid (hh:mm:ss): \r");
@@ -97,10 +98,12 @@ int main(void) {
     }
 
     if (start_time == 1) {
-      update_time(&hours, &minutes, &seconds);
-      sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
-      UART0_puts(time);
-      _delay_ms(1000);
+      if (timer_flag) {
+        timer_flag = 0;
+        update_time(&hours, &minutes, &seconds);
+        sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
+        UART0_puts(time);
+      }
     }
   }
 }
@@ -123,5 +126,15 @@ ISR(USART0_RX_vect) { // RX complete ISR
   if (i == 9) {
     RX_flag = 1;
     i = 0;
+  }
+}
+
+ISR(TIMER3_COMPA_vect) { // timer match interrupt
+  if (counter == 999) {
+    counter = 0;
+    timer_flag = 1;
+  }
+  else {
+    counter++;
   }
 }
