@@ -81,20 +81,12 @@ int main(void) {
       UART0_puts("\nUr resat til: \r");
       sprintf(time, "%02i:%02i:%02i\r", hours, minutes, seconds);
       UART0_puts(time);
+      start_time = 1;
     }
     
     if (RX_recieved == 1) {
       RX_recieved = 0;
       UART0_sendChar(data);
-    }
-    
-    if (RX_flag == 1) {
-      sscanf(init_time, "%d:%d:%d" , &hours, &minutes, &seconds);
-      UART0_puts("\nUr sat til: \r");
-      sprintf(time, "%02i:%02i:%02i\r", hours, minutes, seconds);
-      UART0_puts(time);
-
-      start_time = 1;
     }
 
     if (start_time == 1) {
@@ -124,7 +116,7 @@ ISR(USART0_RX_vect) { // RX complete ISR
   i++;
 
   if (i == 9) {
-    RX_flag = 1;
+    Reset_flag = 1;
     i = 0;
   }
 }
