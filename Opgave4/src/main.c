@@ -16,12 +16,15 @@
 #include <avr/interrupt.h>
 
 
-volatile char c;
+volatile char data;
 volatile char Reset_flag = 0; // interrupt reset button
 volatile char RX_flag = 0;
+volatile char RX_recieved = 0;
+char init_time[50] = {0}; //initialize the buffer!
+char time[50];
+volatile char start_time = 0;
 
-
-
+  
 void OLED_Init() {
 	I2C_Init();
 	InitializeDisplay();
@@ -59,27 +62,16 @@ void update_time(int *hh , int *mm , int *ss) {
 
 int main(void) {
   UART0_Init(MYUBRR);
-  UART0_enableReceive_Itr;
+  UART0_enableReceive_Itr();
   OLED_Init();
   itr_button_Init();
   sei(); // global interrupt enable
   
-  
   UART0_puts("Indtast den aktuelle tid (hh:mm:ss): \r");
-  
-  char init_time[50];
-  UART0_gets(init_time);
 
   int hours;
   int minutes;
   int seconds;
-
-  sscanf(init_time, "%d:%d:%d" , &hours, &minutes, &seconds);
-
-  char time[50];
-  sprintf(time, "\nInit time: %02i:%02i:%02i\r", hours, minutes, seconds);
-  UART0_puts(time);
-
 
   while (1) {
     if (Reset_flag == 1) {
@@ -90,10 +82,26 @@ int main(void) {
       UART0_puts(time);
     }
     
-    update_time(&hours, &minutes, &seconds);
-    sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
-    UART0_puts(time);
-    _delay_ms(1000);
+    if (RX_recieved == 1) {
+      RX_recieved = 0;
+      UART0_sendChar(data);
+    }
+    
+    if (RX_flag == 1) {
+      sscanf(init_time, "%d:%d:%d" , &hours, &minutes, &seconds);
+      UART0_puts("\nUr sat til: \r");
+      sprintf(time, "%02i:%02i:%02i\r", hours, minutes, seconds);
+      UART0_puts(time);
+
+      start_time = 1;
+    }
+
+    if (start_time == 1) {
+      update_time(&hours, &minutes, &seconds);
+      sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
+      UART0_puts(time);
+      _delay_ms(1000);
+    }
   }
 }
 
@@ -103,6 +111,17 @@ ISR(INT4_vect) { // Reset button ISR
 }
 
 ISR(USART0_RX_vect) { // RX complete ISR
-  RX_flag = 1;
-  c=UDR0;
+  start_time = 0;
+  RX_flag = 0;
+  RX_recieved = 1;
+  static int i = 0;
+  
+  data = UDR0;
+  init_time[i] = UDR0;
+  i++;
+
+  if (i == 9) {
+    RX_flag = 1;
+    i = 0;
+  }
 }
