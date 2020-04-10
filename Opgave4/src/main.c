@@ -1,9 +1,8 @@
 /*
- * 
- 
  * Kasper Nyhus Kaae
  * s195087
  */ 
+
 #define BAUD 19200
 #define MYUBRR F_CPU/8/BAUD-1 //full dublex
 
@@ -14,48 +13,40 @@
 #include "timer.h"
 
 
-volatile char data;
+volatile char c_buffer;
+volatile int index = 0;
 volatile char Reset_flag = 0; // interrupt reset button
-volatile char RX_flag = 0;
 volatile char RX_recieved = 0;
 volatile char timer_flag = 0;
 volatile int counter = 0;
-char init_time[50] = {0}; //initialize the buffer!
-char time[50];
-volatile char start_time = 0;
-
-  
-void OLED_Init() {
-	I2C_Init();
-	InitializeDisplay();
-	clear_display();
-}
+char init_time[50] = {0}; //initialize the buffer
+char time[50]; //buffer for time string
+char start_timer = 0;
 
 
 void itr_button_Init() {
   itr4_Init();
-
 	DDRE &=~ (1<<4); // set PE4 as INPUT PULLUP
 	PORTE |= (1<<4); 
 }
 
 
-void update_time(int *hh , int *mm , int *ss) {
-  if (*ss < 59)
-    (*ss)++;
-  else if (*mm < 59) {
-    (*ss) = 0;
-    (*mm)++;
+void update_time(int *h , int *m , int *s) {
+  if (*s < 59)
+    (*s)++;
+  else if (*m < 59) {
+    (*s) = 0;
+    (*m)++;
   }
-  else if (*hh < 23) {
-    (*ss) = 0;
-    (*mm) = 0;
-    (*hh)++;
+  else if (*h < 23) {
+    (*s) = 0;
+    (*m) = 0;
+    (*h)++;
   }
   else {
-    (*ss) = 0;
-    (*mm) = 0;
-    (*hh) = 0;
+    (*s) = 0;
+    (*m) = 0;
+    (*h) = 0;
   }
 }
 
@@ -63,12 +54,11 @@ void update_time(int *hh , int *mm , int *ss) {
 int main(void) {
   UART0_Init(MYUBRR);
   UART0_enableReceive_Itr();
-  OLED_Init();
   itr_button_Init();
   timer3_Init(249); // = 1ms, prescaling = 64
   sei(); // global interrupt enable
   
-  UART0_puts("Indtast den aktuelle tid (hh:mm:ss): \r");
+  UART0_puts("Indtast den aktuelle tid (hh:mm:ss): ");
 
   int hours;
   int minutes;
@@ -78,22 +68,23 @@ int main(void) {
     if (Reset_flag == 1) {
       Reset_flag = 0;
       sscanf(init_time, "%d:%d:%d" , &hours, &minutes, &seconds);
-      UART0_puts("\nUr resat til: \r");
-      sprintf(time, "%02i:%02i:%02i\r", hours, minutes, seconds);
+      UART0_puts("\nUr resat til: ");
+      sprintf(time, "%02i:%02i:%02i", hours, minutes, seconds);
       UART0_puts(time);
-      start_time = 1;
+      start_timer = 1;
     }
     
     if (RX_recieved == 1) {
+      start_timer = 0;
       RX_recieved = 0;
-      UART0_sendChar(data);
+      UART0_sendChar(c_buffer);
     }
 
-    if (start_time == 1) {
+    if (start_timer == 1) {
       if (timer_flag) {
         timer_flag = 0;
         update_time(&hours, &minutes, &seconds);
-        sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i\r", hours, minutes, seconds);
+        sprintf(time, "\nAktuelt klokkeslæt er %02i:%02i:%02i", hours, minutes, seconds);
         UART0_puts(time);
       }
     }
@@ -106,19 +97,16 @@ ISR(INT4_vect) { // Reset button ISR
 }
 
 ISR(USART0_RX_vect) { // RX complete ISR
-  start_time = 0;
-  RX_flag = 0;
   RX_recieved = 1;
-  static int i = 0;
   
-  data = UDR0;
-  init_time[i] = UDR0;
-  i++;
-
-  if (i == 9) {
+  if (index == 9) {
     Reset_flag = 1;
-    i = 0;
+    index = 0;
   }
+
+  c_buffer = UDR0;
+  init_time[index] = UDR0;
+  index++;
 }
 
 ISR(TIMER3_COMPA_vect) { // timer match interrupt

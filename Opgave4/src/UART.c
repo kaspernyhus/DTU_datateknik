@@ -47,22 +47,22 @@ char UART0_receiveChar() {
 }
 
 void UART0_puts(char *StringPtr) {
-  while(*StringPtr != '\r') { //while char in string is not carriage-return (!= '\r')
+  while(*StringPtr != '\0') { //while char in string is not Carriage-Return (!= '\r')
     UART0_sendChar(*StringPtr);
     StringPtr++;
   }
 }
 
-void UART0_gets(char *cPtr) {
+void UART0_gets(char *c_buffer) {
   char c;
   while((c=UART0_receiveChar()) != 0x0D) { // while not "Enter"
-    *cPtr = c;
+    *c_buffer = c;
     UART0_sendChar(c);
-    cPtr++;
+    c_buffer++;
   }
-  *cPtr = '\n';
-  cPtr++;
-  *cPtr = '\r';
-  cPtr++;
-  *cPtr = 0; // terminate string
+  *c_buffer = '\n';
+  c_buffer++;
+  *c_buffer = '\r';
+  c_buffer++;
+  *c_buffer = 0; // terminate string
 }
