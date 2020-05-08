@@ -15,7 +15,7 @@ ARDUINO MEGA2560
 #include "timer.h"
 
 void timer1_Normal_OVitr_Init() {
-  //TCCR1B |= (1<<CS11); // pre-scaling /8
+  TCCR1B |= (1<<CS11); // pre-scaling /8
   // normal mode
   TIMSK1 |= (1<<TOIE1); // overflow interrupt enable 
 }

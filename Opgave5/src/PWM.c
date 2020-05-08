@@ -13,11 +13,12 @@ ARDUINO MEGA2560
 
 #include "PWM.h"
 
-void PWM_timer1_ph_correct_Init() {
-	TCCR1A |= (1<<COM1A1)|(1<<WGM10); // Clear OCnA on compare match (set output to low level) - DS: p155
-	TCCR1B |= (1<<CS11); //prescaler 8
-	//OCR2A = 102; //40% duty cycle
-	TCNT1 = 0; //force counter reset
+void PWM_timer4_ph_correct_Init() {
+	TCCR4A |= (1<<COM4A1);  // Clear OCnA on compare match (set output to low level) - DS: p155
+	TCCR4A |= (1<<WGM40);		// PWM, ph correct 8-bit. TOP: 0x00FF - DS table: p148
+	TCCR4B |= (1<<CS41); //prescaler 8
+	
+	TCNT4 = 0; //force counter reset
 
-	DDRB |= (1<<5); // configure OC1A pin OUTPUT
+	DDRH |= (1<<3); // configure OC4A pin OUTPUT (PH3)
 }

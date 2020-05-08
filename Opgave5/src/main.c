@@ -27,7 +27,7 @@ volatile unsigned int sample = 0;
 volatile char sample_ready = 0;
 volatile char rx_flag = 0;
 volatile int timer_counter = 0;
-volatile char timer_1ms = 0;
+volatile char timer_flag = 0;
 
 unsigned int MIN_value = 0;
 unsigned int MAX_value = 255;
@@ -104,7 +104,9 @@ void init() {
 
 	timer1_Normal_OVitr_Init();
 	adc1_125khz_timer1_OV_Init();
-	PWM_timer1_ph_correct_Init();
+	PWM_timer4_ph_correct_Init();
+
+	DDRB |= (1<<7); //On-Board LED
 }
 
 
@@ -155,12 +157,14 @@ int main(void) {
 		if (sample_ready) {
 			sample_ready = 0;
 			sample = map_ADC_PWM(sample, MIN_value, MAX_value); // map the ADC signal to PWM range incl setting limits
-			OCR1A = sample; // update PWM
+			OCR4A = sample; // update PWM
 		}
 		
-		if (timer_1ms) { // update OLED display approx evry 1ms
-			timer_1ms = 0;
-			// Print to the OLED display
+		if (timer_flag) { // update OLED display approx 30ms
+			timer_flag = 0;
+			
+			//PORTB ^= (1<<7); //blink on-board LED to check lower refresh rate
+			
 			sprintf(oled_buffer, "%.3d", sample); //8 bit value
 			sprintf(oled_buffer2, "%.3d%%", (sample*100/255)); // % of full value
 			sendStrXY(oled_buffer, 4,6);
@@ -188,11 +192,12 @@ ISR(ADC_vect) { // Interrupt on sample ready
 
 
 ISR(TIMER1_OVF_vect) { // Timer 1 overflow
-	if (timer_counter == 100) {
-		timer_1ms = 1;
+	if (timer_counter == 29) { // 30ms
+		timer_flag = 1;
 		timer_counter = 0;
 	}
 	else {
 		timer_counter++;
 	}
+	TCNT1 = 63536;
 }

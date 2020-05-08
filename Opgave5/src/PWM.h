@@ -13,4 +13,4 @@ ARDUINO MEGA2560
 
 #include <avr/io.h>
 
-void PWM_timer1_ph_correct_Init();
+void PWM_timer4_ph_correct_Init();
