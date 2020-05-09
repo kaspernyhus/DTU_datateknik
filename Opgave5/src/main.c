@@ -23,19 +23,18 @@
 #include "statedef.h"
 
 
-volatile unsigned int sample = 0;
-volatile char sample_ready = 0;
-volatile char rx_flag = 0;
-volatile int timer_counter = 0;
+volatile char init_flag = 1;
 volatile char timer_flag = 0;
-
+volatile int timer_counter = 0;
+volatile char rx_flag = 0;
+volatile char data = 0;
+volatile char sample_ready = 0;
+volatile unsigned int sample = 0;
 unsigned int MIN_value = 0;
 unsigned int MAX_value = 255;
-volatile char init_flag = 1;
 char val_buffer[8] = {'\0'};
 int _index = 0;
 char PWMvalues[8];
-volatile char data = 0;
 
 
 //------------------------------------------------------------------------
@@ -107,6 +106,8 @@ void init() {
 	PWM_timer4_ph_correct_Init();
 
 	DDRB |= (1<<7); //On-Board LED
+
+	sei();
 }
 
 
@@ -118,7 +119,6 @@ int map_ADC_PWM(unsigned int sample, unsigned int min, unsigned int max) { // ma
 
 int main(void) {
   init();
-	sei();
 	char oled_buffer[20];
 	char oled_buffer2[20];
 	stateEval((event)NILEVENT); // initial state

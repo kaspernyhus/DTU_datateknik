@@ -15,7 +15,7 @@ ARDUINO MEGA2560
 
 void adc1_125khz_timer1_OV_Init() {
 	ADCSRA |= (1<<ADEN); //ADC Enable
-	ADCSRA |= (1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2); //prescaling 16Mhz/128 = 125kHz
+	ADCSRA |= (1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2); //prescaling 16Mhz/128 = 125kHz DS: p.293
 	ADMUX |= (1<<REFS0); // AVCC reference
 	
 	ADCSRA |= (1<<ADIE); // ADC Interrupt Enable
