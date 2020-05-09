@@ -199,5 +199,5 @@ ISR(TIMER1_OVF_vect) { // Timer 1 overflow
 	else {
 		timer_counter++;
 	}
-	TCNT1 = 63536;
+	TCNT1 = 63535; // set where counter starts. Overflow in 2000 ticks = 1ms
 }

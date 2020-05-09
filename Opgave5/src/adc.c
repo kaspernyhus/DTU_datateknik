@@ -31,8 +31,8 @@ void adc1_125khz_timer1_OV_Init() {
 
 unsigned int get_sample(char channel) {
 	
-	//DIDR0 = (1<<channel);
-	//DIDR0 =~ (1<<channel); //now only active pin in "Digital Input Disable Register" is the current channel
+	DIDR0 = (1<<channel);
+	DIDR0 =~ (1<<channel); //now only active pin in "Digital Input Disable Register" is the current channel
 	DIDR0 = 0xFE;
 	DIDR1 = 0xFF; //every other channel is off
 

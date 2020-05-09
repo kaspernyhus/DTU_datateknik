@@ -1,7 +1,10 @@
 /*
     
-    Kasper Nyhus Kaae
-        s195087
+   !!OBS!!
+   
+   Denne kode er en tilpasset version
+   af den udleverede kode fra filen
+   PWM_ex_statemachine_pointer_driven.c
 
 ---------------------------------
 UART Task - State Machine

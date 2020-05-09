@@ -17,8 +17,8 @@ ARDUINO MEGA2560
 void UART0_Init(unsigned int baud) {
   UCSR0A = (1<<U2X0); //Enable dublex. OBS: ONLY use with async operation
   UCSR0B |= (1<<RXEN0)|(1<<TXEN0); //Enable receive and transmit
-  //UCSR0C &=~ (1<<UMSEL00) | (1<<UMSEL01); //Async UART
-  //UCSR0C &=~ (1<<UPM00) | (1<<UPM01) | (1<<USBS0); //No parity. 1 stop bit
+  UCSR0C &=~ (1<<UMSEL00) | (1<<UMSEL01); //Async UART
+  UCSR0C &=~ (1<<UPM00) | (1<<UPM01) | (1<<USBS0); //No parity. 1 stop bit
   UCSR0C |= (1<<UCSZ00)|(1<<UCSZ01); //8-bit data frame
 
   //Baud rate setting
