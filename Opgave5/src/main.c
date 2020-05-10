@@ -1,7 +1,8 @@
 /*
 ----------------------------
  Datateknik & programmering 
-		 		Opgave 5
+
+Opgave 5 - ADC-PWM Lysstyring
 ----------------------------
 */ 
 
@@ -107,14 +108,16 @@ void init() {
 
 	DDRB |= (1<<7); //On-Board LED
 
-	sei();
+	sei(); // Global interrupt enable
 }
 
 
+//------------------------------------ VALUE MAPPING ------------------------------------
 int map_ADC_PWM(unsigned int sample, unsigned int min, unsigned int max) { // map ADC sample range (0-1023) to PWM range (0-255)
 	sample = sample/4; // 1024/4 = 256, ADC range: 0-255
 	return sample * (max - min) / 255 + min;
 }
+//---------------------------------------------------------------------------------------
 
 
 int main(void) {
@@ -149,10 +152,8 @@ int main(void) {
 				default:
 				eventOccured=NILEVENT;
 			}
-
 			stateEval((event)eventOccured); // Update current state based on what event occured
 		}
-		
 		
 		if (sample_ready) {
 			sample_ready = 0;
@@ -163,7 +164,7 @@ int main(void) {
 		if (timer_flag) { // update OLED display approx 30ms
 			timer_flag = 0;
 			
-			//PORTB ^= (1<<7); //blink on-board LED to check lower refresh rate
+			//PORTB ^= (1<<7); //blink on-board LED to varify lower refresh rate
 			
 			sprintf(oled_buffer, "%.3d", sample); //8 bit value
 			sprintf(oled_buffer2, "%.3d%%", (sample*100/255)); // % of full value
@@ -192,12 +193,12 @@ ISR(ADC_vect) { // Interrupt on sample ready
 
 
 ISR(TIMER1_OVF_vect) { // Timer 1 overflow
-	if (timer_counter == 29) { // 30ms
+	if (timer_counter == 29) { // = 30ms
 		timer_flag = 1;
 		timer_counter = 0;
 	}
 	else {
 		timer_counter++;
 	}
-	TCNT1 = 63535; // set where counter starts. Overflow in 2000 ticks = 1ms
+	TCNT1 = 63535; // set where counter starts. Overflow in 2000 counts = 1ms
 }
